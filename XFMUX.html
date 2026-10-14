@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="black">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XFMUX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#000;--p1:#0a0a0b;--p2:#131315;--ln:#222427;--tx:#ececee;--dim:#7d8187;--hi:rgba(255,255,255,.06);--sel:rgba(255,255,255,.22);--kw:#fff;--st:#aebccb;--nu:#dedede;--fn:#cbd3db;--bn:#8e99a5;--cm:#5c6167;--pt:#000;--glow:rgba(255,255,255,.2);--chrome:linear-gradient(135deg,#fff 0%,#9ba2aa 22%,#f5f7f9 42%,#6a7178 58%,#eceff2 78%,#8a9198 100%);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[data-theme=white]{--bg:#f2f2f3;--p1:#fff;--p2:#ececee;--ln:#d8d9dc;--tx:#141416;--dim:#6b6f76;--hi:rgba(0,0,0,.05);--sel:rgba(0,0,0,.16);--kw:#000;--st:#47566a;--nu:#2a2a2d;--fn:#33383f;--bn:#69727c;--cm:#9a9fa6;--pt:#fff;--glow:rgba(0,0,0,.14);--chrome:linear-gradient(135deg,#000,#6c727a 30%,#1a1b1d 55%,#80868d 78%,#000)}
+[data-theme=chrome]{--bg:#2a2c30;--p1:#383b40;--p2:#2f3135;--ln:#52565d;--tx:#f4f6f8;--dim:#aab1b9;--hi:rgba(255,255,255,.09);--sel:rgba(255,255,255,.3);--st:#d8e1eb;--nu:#fff;--fn:#e7ecf1;--bn:#bdc6cf;--cm:#8d949c;--pt:#111;--glow:rgba(255,255,255,.3)}
+html,body{height:100%;margin:0;background:var(--bg)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{color:var(--tx);font:13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;transition:background .5s,color .4s}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+#app{height:100%;display:flex;flex-direction:column;animation:rise 1s cubic-bezier(.2,.8,.2,1) both}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px;background:var(--p1);border-bottom:1px solid var(--ln);transition:background .5s}
+.logo{font:900 21px/1.05 Orbitron,system-ui;display:flex;flex-direction:column;align-items:center;letter-spacing:.2em;background:var(--chrome);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 4s ease-in-out infinite alternate;margin-right:auto}
+.ib{padding:6px 11px;border:1px solid var(--ln);border-radius:8px;background:var(--p2);transition:.2s}
+.ib:hover{border-color:var(--dim);box-shadow:0 0 14px var(--glow)}.ib:active{transform:scale(.94)}
+.ib.off{opacity:.45}
+.row{display:flex;gap:10px;width:100%;align-items:center}
+.seg{position:relative;display:flex;flex:1;min-width:0;background:var(--p2);border:1px solid var(--ln);border-radius:11px;padding:3px;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{position:relative;z-index:1;flex:1 0 auto;padding:7px 13px;border-radius:8px;white-space:nowrap;font-weight:600;color:var(--dim);transition:color .3s}
+.seg button.on{color:var(--pt)}
+.pill{position:absolute;top:3px;bottom:3px;left:0;border-radius:8px;background:var(--chrome);box-shadow:0 0 20px var(--glow);transition:transform .5s cubic-bezier(.2,.9,.2,1),width .5s}
+.copy{padding:9px 18px;border-radius:10px;font-weight:700;color:var(--pt);background:var(--chrome);background-size:200% 100%;transition:.3s;box-shadow:0 0 0 var(--glow)}
+.copy:hover{background-position:100% 0;box-shadow:0 0 22px var(--glow)}.copy:active{transform:scale(.93)}
+.copy.ok{animation:pop .5s}
+.tabs{display:flex;background:var(--p2);border-bottom:1px solid var(--ln)}
+.tab{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--p1);position:relative;font-family:'JetBrains Mono',monospace;font-size:12px}
+.tab:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--chrome)}
+.tab:after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--chrome);animation:grow .6s both}
+.ed{position:relative;flex:1;min-height:0;display:flex;background:var(--p1);transition:background .5s}
+.gut{width:46px;flex:none;overflow:hidden;border-right:1px solid var(--ln);color:var(--dim);text-align:right;user-select:none}
+.gut div,#code,#ta{font:400 13px/22px 'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;tab-size:2;white-space:pre;letter-spacing:0}
+.gut div{padding:14px 10px 0 0}
+.main{position:relative;flex:1;min-width:0;overflow:hidden}
+.main.swap{animation:swap .5s cubic-bezier(.2,.8,.2,1)}
+#cl{position:absolute;left:0;right:0;top:0;height:22px;background:var(--hi);border-left:2px solid var(--tx);transition:transform .12s}
+#hl{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+#code{display:block;margin:0;padding:14px 60px 60px 14px;color:var(--tx);will-change:transform}
+#code i{font-style:normal}.c{color:var(--cm);font-style:italic!important}.k{color:var(--kw);font-weight:700}.s{color:var(--st)}.n{color:var(--nu)}.f{color:var(--fn);text-decoration:underline;text-decoration-color:var(--ln);text-underline-offset:3px}.b{color:var(--bn)}
+#ta{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:14px 60px 60px 14px;border:0;outline:0;resize:none;overflow:auto;background:transparent;color:transparent;caret-color:var(--tx)}
+#ta::selection{background:var(--sel);color:transparent}
+.ac{position:absolute;z-index:5;min-width:170px;max-width:85%;background:var(--p2);border:1px solid var(--ln);border-radius:10px;padding:4px;box-shadow:0 14px 40px rgba(0,0,0,.45),0 0 0 1px var(--glow);opacity:0;transform:translateY(-5px) scale(.96);pointer-events:none;transition:opacity .14s,transform .14s}
+.ac.show{opacity:1;transform:none;pointer-events:auto}
+.it{display:flex;justify-content:space-between;gap:18px;padding:5px 8px;border-radius:6px;font:12.5px 'JetBrains Mono',monospace;cursor:pointer}
+.it em{font-style:normal;color:var(--dim);font-size:10px}
+.it.on{background:var(--chrome);color:var(--pt)}.it.on em{color:inherit;opacity:.65}
+.st{display:flex;gap:16px;align-items:center;padding:5px 12px;background:var(--chrome);color:var(--pt);font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden}
+.st .sp{margin-left:auto}
+#toast{position:fixed;left:50%;bottom:48px;transform:translate(-50%,30px);padding:9px 16px;border-radius:999px;background:var(--chrome);color:var(--pt);font-weight:700;opacity:0;pointer-events:none;transition:.35s cubic-bezier(.2,.9,.2,1);z-index:60;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#splash{--c:linear-gradient(135deg,#fff,#9ba2aa 30%,#f5f7f9 50%,#6a7178 70%,#eceff2);position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:radial-gradient(circle at 50% 42%,#1b1b1e,#000 70%);transition:opacity .8s,visibility .8s,transform .8s}
+#splash.out{opacity:0;visibility:hidden;transform:scale(1.1)}
+.sl{display:flex;font:900 clamp(40px,15vw,96px) Orbitron,system-ui}
+.sl span{background:var(--c);background-size:100% 220%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:letter 1s cubic-bezier(.2,.9,.2,1) both,shine2 3s ease-in-out infinite alternate;animation-delay:calc(var(--i)*.1s),1s;margin:0 .03em}
+.bar{height:2px;width:0;background:var(--c);animation:bar 1.4s .4s cubic-bezier(.6,0,.2,1) forwards;box-shadow:0 0 18px #fff}
+.go{padding:12px 30px;border-radius:12px;font:800 14px Orbitron,system-ui;letter-spacing:.14em;color:#000;background:var(--c);opacity:0;animation:fade .7s 1.5s forwards;transition:.25s}
+.go:hover{box-shadow:0 0 34px rgba(255,255,255,.55);transform:translateY(-2px)}.go:active{transform:scale(.94)}
+.logo small{font-size:11px;letter-spacing:.6em;margin:0 -.6em 4px 0}
+.trc{font:800 clamp(14px,4vw,22px) Orbitron,system-ui;letter-spacing:.9em;margin:0 -.9em -12px 0;color:#c9cdd2;opacity:0;animation:fade .8s .2s forwards}
+.nav{display:flex;gap:6px;padding:7px 12px;background:var(--p2);border-bottom:1px solid var(--ln)}
+.nv,.ch button{padding:7px 15px;border-radius:9px;border:1px solid var(--ln);background:var(--p1);font-weight:600;color:var(--dim);transition:.25s}
+.nv.on,.ch button.on{background:var(--chrome);color:var(--pt);border-color:transparent;box-shadow:0 0 18px var(--glow)}
+.nv:active,.ch button:active{transform:scale(.95)}
+#learn{display:none;flex:1;min-height:0;overflow:auto;padding:18px 14px 28px;background:var(--p1)}
+#app.learn #learn{display:block;animation:swap .5s}
+#app.learn .row,#app.learn .tabs,#app.learn .ed,#app.learn #pos,#app.learn #lg,#app.learn #au,#app.learn #cnt{display:none}
+.lw{max-width:760px;margin:0 auto}
+.lw h2{font:800 20px Orbitron,system-ui;margin:0 0 6px;letter-spacing:.06em}.lw h3{font-size:14px;margin:24px 0 10px}
+.lw p{color:var(--dim);margin:0}
+.ch{display:flex;flex-wrap:wrap;gap:8px}
+.lang{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lang button{padding:14px 12px;border-radius:12px;border:1px solid var(--ln);background:var(--p2);text-align:left;font-weight:700;transition:.25s}
+.lang button.on{background:var(--chrome);color:var(--pt);box-shadow:0 0 22px var(--glow)}
+.lang .soon{opacity:.5;cursor:not-allowed}
+.lang small{display:block;font-weight:500;color:var(--dim);margin-top:3px}.lang .on small{color:var(--pt)}
+.card{border:1px solid var(--ln);background:var(--p2);border-radius:12px;padding:14px 16px;margin-top:10px}
+.card ol{margin:6px 0 10px;padding-left:20px}.card li{margin:3px 0}
+.lh{display:flex;align-items:center;gap:8px;margin:10px 0 8px}.lh b{margin-right:auto;font-family:'JetBrains Mono',monospace;font-size:12px}
+.lc{margin:0;padding:14px;max-height:52vh;overflow:auto;background:var(--bg);border:1px solid var(--ln);border-radius:12px;font:12.5px/1.6 'JetBrains Mono',ui-monospace,monospace;color:var(--tx);tab-size:2}
+.lc i{font-style:normal}
+.fo{text-align:center;color:var(--dim);margin-top:28px;font-weight:600}
+#sheet{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:.3s}
+#sheet.show{opacity:1;visibility:visible}
+.pn{width:min(480px,100%);max-height:88%;overflow:auto;background:var(--p1);border:1px solid var(--ln);border-radius:18px 18px 0 0;padding:16px 16px calc(22px + env(safe-area-inset-bottom,0px));transform:translateY(40px);transition:transform .4s cubic-bezier(.2,.9,.2,1)}
+#sheet.show .pn{transform:none}
+.sh{display:flex;align-items:center;justify-content:space-between}.sh b{font:800 16px Orbitron,system-ui}
+.pn h4{margin:16px 0 8px;font-size:13px;color:var(--dim)}
+.ch .soonx{opacity:.5;cursor:not-allowed}
+.ed,.lc{direction:ltr}
+@media(min-width:700px){#sheet{align-items:center}.pn{border-radius:18px}}
+:root{--k1:#27282c;--k2:#17181b}[data-theme=white]{--k1:#fff;--k2:#dcdde0}[data-theme=chrome]{--k1:#50545b;--k2:#363a3f}
+.kbb{padding:7px 15px;border-radius:9px;font-weight:600;color:var(--dim)}.kbb::before{content:"⌨ "}
+.kbb.on{background:var(--chrome);color:var(--pt);border-color:transparent;box-shadow:0 0 18px var(--glow)}
+#kb{flex:none;max-height:0;overflow:hidden;direction:ltr;background:var(--p1);border-top:1px solid var(--ln);transition:max-height .55s cubic-bezier(.2,.9,.2,1);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+#kb.show{max-height:340px}#app.learn #kb{display:none}
+.kbi{padding:6px 5px 8px;transform:translateY(40px);opacity:0;transition:transform .55s cubic-bezier(.2,.9,.2,1),opacity .35s}
+#kb.show .kbi{transform:none;opacity:1}
+.strip{display:flex;gap:5px;overflow-x:auto;padding:1px 1px 6px;scrollbar-width:none;touch-action:pan-x}.strip::-webkit-scrollbar{display:none}
+#rows{touch-action:none}
+.kr{display:flex;gap:6px;margin-top:8px}.kr.ind{padding:0 5%}
+#kb .k{position:relative;flex:1;min-width:0;height:46px;display:grid;place-items:center;border-radius:9px;background:var(--k1);color:var(--tx);font:500 20px system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 1px 0 rgba(0,0,0,.4),inset 0 1px 0 var(--hi);transition:transform .14s cubic-bezier(.3,1.6,.5,1),background .15s,box-shadow .15s;animation:kin .32s cubic-bezier(.2,.9,.2,1) both;animation-delay:calc(var(--i,0)*9ms);-webkit-tap-highlight-color:transparent}
+#kb .k.dn.dn{transform:scale(.93);background:var(--ln);box-shadow:0 0 16px var(--glow)}
+#kb .k.sp{background:var(--k2);font-size:15px;font-weight:600}#kb .k.w{flex:1.5}#kb .k.m{font-size:14px;font-weight:600}
+#kb .k.sx{flex:5;font-size:13px;font-weight:500;color:var(--dim)}
+#kb .k.en{flex:1.5;background:var(--chrome);color:var(--pt);font-size:22px;font-weight:700}
+#kb .k.shf.on{background:var(--chrome);color:var(--pt)}#kb .k.shf.lock::after{content:"";position:absolute;bottom:7px;width:16px;height:3px;border-radius:2px;background:currentColor}
+#kb .k i{position:absolute;top:3px;right:5px;font:400 9px system-ui;color:var(--dim)}
+#kb[data-sh="1"] .l,#kb[data-sh="2"] .l{text-transform:uppercase}
+#kb .k.s2{flex:none;min-width:40px;height:34px;padding:0 11px;font-size:15px;animation:none;background:var(--k2)}
+#pv{position:fixed;z-index:70;display:none;width:54px;height:66px;padding-top:8px;place-items:start center;border-radius:14px;background:var(--k1);border:1px solid var(--ln);color:var(--tx);font:500 32px system-ui;box-shadow:0 10px 30px rgba(0,0,0,.5);pointer-events:none;transform-origin:50% 100%}
+#pv.on{display:grid;animation:pvin .17s cubic-bezier(.2,1.6,.4,1)}
+@keyframes kin{from{opacity:0;transform:translateY(10px) scale(.9)}}@keyframes pvin{from{opacity:0;transform:translateY(12px) scale(.6)}}
+@media(max-width:699px){#cnt,#au{display:none}}
+@media(min-width:700px){.gut div,#code,#ta{font-size:14px}.top{padding:12px 20px}.row{width:auto;flex:1;max-width:620px}}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.985)}}
+@keyframes shine{to{background-position:100% 0}}@keyframes shine2{to{background-position:0 100%}}
+@keyframes letter{from{opacity:0;transform:translateY(46px) scaleY(1.5);filter:blur(14px)}}
+@keyframes bar{to{width:min(260px,60vw)}}@keyframes fade{to{opacity:1}}
+@keyframes grow{from{transform:scaleX(0)}}@keyframes pop{40%{transform:scale(1.12)}}
+@keyframes swap{from{opacity:0;transform:translateY(10px);filter:blur(5px)}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<div id="splash"><div class="trc">TRC</div><div class="sl"><span style="--i:0">X</span><span style="--i:1">F</span><span style="--i:2">M</span><span style="--i:3">U</span><span style="--i:4">X</span></div><div class="bar"></div><button class="go" id="go">ENTER</button></div>
+<div id="app">
+ <div class="top">
+  <div class="logo"><small>TRC</small>XFMUX</div>
+  <button class="ib" id="setb" data-t>Settings</button>
+  <div class="row">
+   <div class="seg" id="seg"><div class="pill" id="pill"></div>
+    <button data-l="py">Python</button><button data-l="js">JavaScript</button><button data-l="lua" class="on">Lua</button><button data-l="luau">Roblox Luau</button></div>
+   <button class="copy" id="copy" data-t>Copy</button>
+  </div>
+ </div>
+ <div class="nav"><button class="nv on" data-v="ed" data-t>Editor</button><button class="nv" data-v="ln" data-t>Learn</button><button class="ib kbb" id="kbtn" data-t>Keyboard</button></div>
+ <div class="tabs"><div class="tab" id="fn">main.lua</div></div>
+ <div class="ed">
+  <div class="gut"><div id="gut"></div></div>
+  <div class="main" id="main">
+   <div id="cl"></div>
+   <div id="hl"><div id="code"></div></div>
+   <textarea id="ta" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" aria-label="Code editor"></textarea>
+   <div class="ac" id="ac"></div>
+  </div>
+ </div>
+ <div id="learn"><div class="lw">
+  <h2 data-t>Learn scripting</h2><p data-t>Pick a topic, quality and level. Open it in the editor and make it better.</p>
+  <h3 data-t>1. Language</h3>
+  <div class="lang" id="lang"><button class="soon" data-soon="Lua">Lua<small data-t>Coming Soon</small></button><button class="on" data-l="luau">Roblox Luau<small data-t>GUIs, movement, VFX and more</small></button><button class="soon" data-soon="Python">Python<small data-t>Coming Soon</small></button><button class="soon" data-soon="JavaScript">JavaScript<small data-t>Coming Soon</small></button></div>
+  <h3 data-t>2. What do you want to make?</h3>
+  <div class="ch" id="tpl"></div><p id="tdesc" style="margin-top:10px"></p>
+  <h3 data-t>3. Quality</h3>
+  <div class="ch" id="qual"><button data-t class="on" data-v="n">Normal</button><button data-t data-v="h">High quality</button></div>
+  <h3 data-t>4. Your level</h3>
+  <div class="ch" id="lvl"><button data-t class="on" data-v="b">Beginner</button><button data-t data-v="a">Advanced</button><button data-t data-v="p">Professional</button></div>
+  <div class="card" id="lesson"></div>
+  <div class="lh"><b id="lfn"></b><button class="ib" id="lcp" data-t>Copy</button><button class="ib" id="lop" data-t>Open in editor</button></div>
+  <pre class="lc" id="lcode"></pre>
+  <div class="fo" data-t>Made by Scripterblabla</div>
+ </div></div>
+ <div class="st"><span id="pos">Ln 1, Col 1</span><span id="lg">Lua</span><span id="au" data-t>Autocorrect on</span><span id="cnt"></span><span class="sp" data-t>Made by Scripterblabla</span></div>
+ <div id="kb"><div class="kbi"><div class="strip" id="strip"></div><div id="rows"></div></div></div>
+</div>
+<div id="sheet"><div class="pn">
+ <div class="sh"><b data-t>Settings</b><button class="ib" id="sx" data-t>Close</button></div>
+ <h4 data-t>Language</h4>
+ <div class="ch" id="slang"><button data-g="en" class="on">English</button><button data-g="ja">日本語</button><button data-g="id">Bahasa Indonesia</button><button data-g="ms">Bahasa Melayu</button><button data-g="zh">中文</button><button data-g="ar">العربية</button><button class="soonx" data-t>More Coming Soon</button></div>
+ <div class="ch" style="margin-top:18px"><button id="sfxb"></button><button id="thm"></button></div>
+</div></div>
+<div id="pv"></div>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),ta=$('#ta'),code=$('#code'),gut=$('#gut'),cl=$('#cl'),ac=$('#ac'),main=$('#main'),seg=$('#seg'),pill=$('#pill');
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+/* ---------- SFX ---------- */
+let AC=null,muted=false;
+function tone(f,d=.08,t='sine',v=.05,to=null,dl=0){if(muted)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();const a=AC,s=a.currentTime+dl,o=a.createOscillator(),g=a.createGain();o.type=t;o.frequency.setValueAtTime(f,s);if(to)o.frequency.exponentialRampToValueAtTime(to,s+d);g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(v,s+.008);g.gain.exponentialRampToValueAtTime(.0001,s+d);o.connect(g).connect(a.destination);o.start(s);o.stop(s+d+.03)}catch(e){}}
+const sfx={key:k=>k==='Enter'?tone(240,.09,'triangle',.05,150):k==='Backspace'?tone(300,.04,'square',.012,180):tone(1700+Math.random()*700,.03,'square',.012,800),
+ hover:()=>tone(1500,.025,'sine',.012),pick:()=>{tone(700,.06,'triangle',.05);tone(1050,.08,'triangle',.05,null,.05)},
+ fix:()=>{tone(880,.07,'sine',.06);tone(1320,.1,'sine',.06,null,.07)},copy:()=>{[523,659,784,1047].forEach((f,i)=>tone(f,.14,'sine',.06,null,i*.06))},
+ lang:()=>tone(300,.22,'sawtooth',.03,1200),theme:()=>tone(1200,.2,'triangle',.04,400),
+ boot:()=>{[165,247,330,494,659].forEach((f,i)=>tone(f,.9,'sine',.05,null,i*.09));tone(400,.9,'sawtooth',.02,2400)}};
+/* ---------- language data ---------- */
+const W=s=>new Set(s.split(' '));
+const LANG={py:{n:'Python',e:'py',u:'    '},js:{n:'JavaScript',e:'js',u:'  '},lua:{n:'Lua',e:'lua',u:'  '},luau:{n:'Roblox Luau',e:'luau',u:'  '}};
+const KW={lua:W('and break do else elseif end false for function goto if in local nil not or repeat return then true until while'),
+ py:W('False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda not or pass raise return try while with yield'),
+ js:W('async await break case catch class const continue default delete do else export extends false finally for function if import in instanceof let new null of return switch this throw true try typeof undefined var void while yield')};
+KW.luau=new Set([...KW.lua,'continue','export','type']);
+const LB='print pairs ipairs next tostring tonumber type pcall xpcall error assert select unpack require setmetatable getmetatable table string math os coroutine';
+const BN={lua:W(LB),luau:W(LB+' game workspace script task Instance Vector3 Vector2 CFrame Color3 UDim2 Enum Players wait spawn delay typeof warn shared'),
+ py:W('print len range input int str float list dict set tuple bool enumerate zip map filter open sorted sum min max abs round isinstance self'),
+ js:W('console document window Math JSON Array Object String Number Promise Map Set Date setTimeout setInterval fetch parseInt parseFloat require module')};
+const mk=(c,s)=>new RegExp(`(${c})|(${s})|(0x[0-9a-fA-F]+|\\d[\\d_]*\\.?\\d*(?:e[+-]?\\d+)?)|([A-Za-z_]\\w*)|([\\s\\S])`,'g');
+const LS=`"(?:\\\\[\\s\\S]|[^"\\\\\\n])*"|'(?:\\\\[\\s\\S]|[^'\\\\\\n])*'|\\[\\[[\\s\\S]*?\\]\\]`;
+const RX={lua:mk('--\\[\\[[\\s\\S]*?\\]\\]|--[^\\n]*',LS),py:mk('#[^\\n]*',`"""[\\s\\S]*?"""|'''[\\s\\S]*?'''|"(?:\\\\.|[^"\\\\\\n])*"|'(?:\\\\.|[^'\\\\\\n])*'`),
+ js:mk('//[^\\n]*|/\\*[\\s\\S]*?\\*/','"(?:\\\\.|[^"\\\\\\n])*"|\'(?:\\\\.|[^\'\\\\\\n])*\'|`(?:\\\\[\\s\\S]|[^`\\\\])*`')};RX.luau=RX.lua;
+function hl(src,l){const kw=KW[l],bn=BN[l];return src.replace(RX[l],(m,c,s,n,w,_,o,all)=>c?`<i class=c>${esc(m)}</i>`:s?`<i class=s>${esc(m)}</i>`:n?`<i class=n>${m}</i>`:w?(kw.has(w)?`<i class=k>${w}</i>`:bn.has(w)?`<i class=b>${w}</i>`:all[o+m.length]==='('?`<i class=f>${w}</i>`:w):esc(m))}
+/* completions */
+const LA='print() pairs() ipairs() tostring() tonumber() type() pcall() error() assert() select() require() setmetatable() table.insert() table.remove() table.concat() table.sort() string.format() string.sub() string.find() string.gsub() string.len() string.upper() string.lower() math.floor() math.ceil() math.random() math.max() math.min() math.abs() math.sqrt() math.huge math.pi os.time() os.clock()';
+const AL={lua:LA,luau:LA+' game:GetService() workspace script.Parent Instance.new() task.wait() task.spawn() task.delay() Vector3.new() CFrame.new() Color3.fromRGB() UDim2.new() Enum. warn() typeof() :WaitForChild() :FindFirstChild() :Connect() :Destroy() :Clone() :FireServer() :FireClient() .Parent .Name .Position',
+ py:'print() len() range() input() int() str() float() list() dict() enumerate() zip() sorted() sum() isinstance() open() self',js:'console.log() console.error() document.querySelector() addEventListener() setTimeout() fetch() JSON.stringify() JSON.parse() Math.floor() Math.random() Array.from() Promise.all()'};
+const SN={lua:{fori:'for i = 1, 10 do\n  |\nend',func:'local function name(|)\n  \nend',ifthen:'if | then\n  \nend',whileloop:'while | do\n  \nend',forpairs:'for key, value in pairs(|) do\n  \nend'},
+ py:{def:'def name(|):\n    ',class:'class Name:\n    def __init__(self):\n        |',main:'if __name__ == "__main__":\n    |',forin:'for i in range(|):\n    '},
+ js:{func:'function name(|) {\n  \n}',arrow:'const name = (|) => {\n  \n}',forof:'for (const x of |) {\n  \n}',log:'console.log(|)'}};
+SN.luau={...SN.lua,getservice:'local Players = game:GetService("|")',playeradded:'game.Players.PlayerAdded:Connect(function(player)\n  |\nend)'};
+const ITEMS={};for(const l in LANG){const a=[];KW[l].forEach(w=>a.push({l:w,i:w,k:'keyword'}));(AL[l]||'').split(' ').forEach(s=>a.push(s.endsWith('()')?{l:s.slice(0,-2),i:s.slice(0,-2)+'(|)',k:'func'}:{l:s,i:s,k:'value'}));for(const k in SN[l]||{})a.push({l:k,i:SN[l][k],k:'snippet'});ITEMS[l]=a}
+/* autocorrect (Lua / Luau) */
+const FIX={};'fucntion funtion functoin fuction funciton>function;retrun reutrn rturn returnn>return;esle eles>else;elsif elif elseIf>elseif;thne tehn>then;locla lcoal loacl>local;whlie wihle>while;ture>true;flase fales fasle>false;nill null Nil>nil;prnt pritn Print>print;edn ened>end;untill>until;repat reapeat>repeat;tostirng>tostring;tonubmer>tonumber;workspce>workspace;ipair>ipairs'.split(';').forEach(g=>{const[a,b]=g.split('>');a.split(' ').forEach(w=>FIX[w]=b)});
+const START={py:'# XFMUX · Python\ndef greet(name):\n    return f"Hello, {name}!"\n\nfor i in range(3):\n    print(greet(f"World {i}"))\n',
+ js:'// XFMUX · JavaScript\nconst greet = (name) => `Hello, ${name}!`;\n\nfor (let i = 0; i < 3; i++) {\n  console.log(greet("World " + i));\n}\n',
+ lua:'-- XFMUX · Lua  (try typing "fucntion", "retrun" or "!=")\nlocal function greet(name)\n  return "Hello, " .. name .. "!"\nend\n\nfor i = 1, 3 do\n  print(greet("World " .. i))\nend\n',
+ luau:'--!strict\nlocal Players = game:GetService("Players")\n\nlocal function onJoin(player: Player)\n  print(player.Name .. " joined XFMUX")\nend\n\nPlayers.PlayerAdded:Connect(onJoin)\n'};
+/* ---------- editor core ---------- */
+let cur='lua',CW=8,LH=22,busy=0,list=[],sel=0,open=false;const buf={};
+const auto=()=>cur==='lua'||cur==='luau';
+function measure(){const s=document.createElement('span'),cs=getComputedStyle(ta);s.style.cssText='position:absolute;visibility:hidden;white-space:pre';s.style.fontFamily=cs.fontFamily;s.style.fontSize=cs.fontSize;s.textContent='M'.repeat(100);document.body.appendChild(s);CW=s.getBoundingClientRect().width/100;s.remove();LH=parseFloat(cs.lineHeight)||22;movePill()}
+function edit(a,b,t,caret){busy=1;ta.focus();ta.setSelectionRange(a,b);const v0=ta.value,ex=v0.slice(0,a)+t+v0.slice(b);try{document.execCommand('insertText',false,t)}catch(e){}if(ta.value!==ex){ta.value=ex;ta.setSelectionRange(a+t.length,a+t.length)}if(caret!=null)ta.setSelectionRange(a+caret,a+caret);busy=0;refresh()}
+let lines=0;
+function refresh(){code.innerHTML=hl(ta.value,cur)+'\n';const n=ta.value.split('\n').length;if(n!==lines){lines=n;gut.textContent=Array.from({length:n},(_,i)=>i+1).join('\n')}scroll();status()}
+function scroll(){const x=ta.scrollLeft,y=ta.scrollTop;code.style.transform=`translate(${-x}px,${-y}px)`;gut.style.transform=`translateY(${-y}px)`;const r=ta.value.slice(0,ta.selectionStart).split('\n').length-1;cl.style.transform=`translateY(${14+r*LH-y}px)`}
+function status(){const v=ta.value.slice(0,ta.selectionStart).split('\n');$('#pos').textContent=`${tr('Ln')} ${v.length}, ${tr('Col')} ${v[v.length-1].length+1}`;$('#cnt').textContent=`${lines} ${tr('lines')} · ${ta.value.length} ${tr('chars')}`}
+ta.addEventListener('scroll',scroll);document.addEventListener('selectionchange',()=>{if(document.activeElement===ta){scroll();status()}});
+function inCode(p){const v=ta.value,ln=v.slice(v.lastIndexOf('\n',p-1)+1,p);return !ln.includes('--')&&!((ln.match(/"/g)||[]).length%2)&&!((ln.match(/'/g)||[]).length%2)}
+function fixWord(p,x){const m=ta.value.slice(0,p).match(/[A-Za-z_]\w*$/);if(!m)return false;const w=m[0],f=FIX[w];if(!f||!inCode(p))return false;const a=p-w.length,pc=ta.value[a-1];if(pc==='.'||pc===':')return false;edit(a,p,f,f.length+x);toast(`Auto-corrected: ${w} → ${f}`);sfx.fix();return true}
+function doCorrect(ch){const v=ta.value,p=ta.selectionStart-1;if(ch==='='&&v[p-1]==='!'&&inCode(p)){edit(p-1,p+1,'~=');toast('Auto-corrected: != → ~=');sfx.fix();return}
+ if(ch==='&'&&v[p-1]==='&'&&inCode(p)){edit(p-1,p+1,'and');toast('Auto-corrected: && → and');sfx.fix();return}
+ if(ch==='|'&&v[p-1]==='|'&&inCode(p)){edit(p-1,p+1,'or');toast('Auto-corrected: || → or');sfx.fix();return}
+ if(/[\s(.,;)\]}=:]/.test(ch))fixWord(p,1)}
+ta.addEventListener('input',e=>{if(busy)return;if(auto()&&e.inputType==='insertText'&&e.data&&e.data.length===1)doCorrect(e.data);refresh();complete(e)});
+/* autocomplete */
+function cands(t){const lt=t.toLowerCase(),m=t.match(/^.*([.:])(\w*)$/),tl=m?m[2].toLowerCase():null,o=[];
+ for(const it of ITEMS[cur]){const lb=it.l.toLowerCase();if(lb.startsWith(lt)&&lb!==lt)o.push({...it,r:t.length});else if(m&&it.l[0]===m[1]&&lb.slice(1).startsWith(tl)&&lb.slice(1)!==tl)o.push({...it,l:it.l.slice(1),i:it.i.slice(1),r:tl.length})}return o.slice(0,7)}
+function complete(e){if(e&&e.inputType&&!/^(insert|deleteContent)/.test(e.inputType))return closeAC();const s=ta.selectionStart;if(s!==ta.selectionEnd)return closeAC();
+ const m=ta.value.slice(0,s).match(/[A-Za-z_]\w*(?:[.:]\w*)?$|[.:]\w*$/);if(!m||(m[0].length<2&&!/[.:]/.test(m[0])))return closeAC();
+ list=cands(m[0]);if(!list.length)return closeAC();sel=0;drawAC()}
+function drawAC(){ac.innerHTML=list.map((it,i)=>`<div class="it${i===sel?' on':''}" data-i="${i}"><span>${esc(it.l)}</span><em>${it.k}</em></div>`).join('');const ln=ta.value.slice(0,ta.selectionStart).split('\n'),row=ln.length-1,col=ln[row].length-list[0].r;
+ ac.classList.add('show');open=true;let x=14+col*CW-ta.scrollLeft,y=14+(row+1)*LH-ta.scrollTop+2;const w=ac.offsetWidth,h=ac.offsetHeight;if(x+w>main.clientWidth-6)x=main.clientWidth-w-6;if(x<4)x=4;if(y+h>main.clientHeight)y=14+row*LH-ta.scrollTop-h-2;ac.style.left=x+'px';ac.style.top=y+'px'}
+function closeAC(){open=false;ac.classList.remove('show')}
+function accept(i){const it=list[i],s=ta.selectionStart,ind=ta.value.slice(0,s).split('\n').pop().match(/^\s*/)[0];let t=it.i.replace(/\n/g,'\n'+ind);const c=t.indexOf('|');t=t.replace('|','');closeAC();edit(s-it.r,s,t,c<0?t.length:c);sfx.pick()}
+ac.addEventListener('pointerdown',e=>{e.preventDefault();const d=e.target.closest('.it');if(d)accept(+d.dataset.i)});
+/* keys */
+const PR={'(':')','[':']','{':'}','"':'"',"'":"'"};
+ta.addEventListener('keydown',e=>{const mod=e.metaKey||e.ctrlKey||e.altKey;if(!mod&&e.key.length<=1||e.key==='Enter'||e.key==='Backspace')sfx.key(e.key);
+ if(open){if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();sel=(sel+(e.key==='ArrowDown'?1:list.length-1))%list.length;drawAC();return}
+  if(e.key==='Enter'||e.key==='Tab'){e.preventDefault();accept(sel);return}if(e.key==='Escape'){closeAC();return}}
+ const s=ta.selectionStart,en=ta.selectionEnd,v=ta.value;
+ if(e.key==='Enter'&&!mod){e.preventDefault();closeAC();if(auto()&&fixWord(s,0)){}const p=ta.selectionStart,b=ta.value.slice(0,p),line=b.slice(b.lastIndexOf('\n')+1),ind=line.match(/^\s*/)[0],tr=line.trim(),u=LANG[cur].u,V=ta.value;let ex='',tail='',back=null;
+  const lua=auto(),py=cur==='py',lo=lua&&(/\b(then|do|else|repeat)$/.test(tr)||(/\bfunction\b.*\)$/.test(tr)));
+  if(lo||(!lua&&(py?tr.endsWith(':'):/[{(\[]$/.test(tr))))ex=u;
+  if(lo&&/^[ \t]*(\n|$)/.test(V.slice(p))){const nx=V.slice(p).split('\n').slice(1).find(x=>x.trim());const ni=nx?nx.match(/^\s*/)[0].length:-1;if(!/\belse\b$/.test(tr)&&(ni<=ind.length&&!/^\s*(end|else|elseif|until)\b/.test(nx||'')))tail='\n'+ind+(/\brepeat$/.test(tr)?'until ':'end')}
+  else if(cur==='js'&&/\{$/.test(tr)&&V[p]==='}')tail='\n'+ind;
+  const t='\n'+ind+ex;edit(p,ta.selectionEnd,t+tail,t.length);return}
+ if(e.key==='Tab'&&!mod){e.preventDefault();edit(s,en,LANG[cur].u);return}
+ if(!mod&&s===en){if(PR[e.key]){const n=v[s];if('"\''.includes(e.key)){if(n===e.key){e.preventDefault();ta.setSelectionRange(s+1,s+1);return}if(/\w/.test(v[s-1]||''))return}e.preventDefault();edit(s,s,e.key+PR[e.key],1);closeAC();return}
+  if(')]}'.includes(e.key)&&v[s]===e.key){e.preventDefault();ta.setSelectionRange(s+1,s+1)}}});
+ta.addEventListener('pointerdown',closeAC);ta.addEventListener('blur',()=>setTimeout(closeAC,120));
+/* ui */
+function toast(m){const t=$('#toast');t.textContent=tr(m).replace('Auto-corrected',tr('Auto-corrected'));t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),1900)}
+function movePill(){const b=seg.querySelector('.on');pill.style.width=b.offsetWidth+'px';pill.style.transform=`translateX(${b.offsetLeft}px)`}
+function setLang(l,first){if(!first)buf[cur]=ta.value;cur=l;ta.value=buf[l]??START[l];seg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.l===l));$('#fn').textContent='main.'+LANG[l].e;$('#lg').textContent=LANG[l].n;kbLabel();$('#au').style.display=auto()?'':'none';ta.scrollTop=ta.scrollLeft=0;lines=0;closeAC();refresh();movePill();if(!first){main.classList.remove('swap');void main.offsetWidth;main.classList.add('swap');sfx.lang()}}
+seg.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.l!==cur)setLang(b.dataset.l)});
+async function copy(){const t=ta.value;let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){ta.select();try{ok=document.execCommand('copy')}catch(_){}ta.setSelectionRange(t.length,t.length)}const b=$('#copy');b.textContent=tr(ok?'Copied ✓':'Copy failed');b.classList.remove('ok');void b.offsetWidth;b.classList.add('ok');setTimeout(()=>b.textContent=tr('Copy'),1400);toast(ok?'Code copied to clipboard':'Select the code and copy it manually');if(ok)sfx.copy()}
+$('#copy').onclick=copy;
+$('#sfxb').onclick=()=>{muted=!muted;btxt();if(!muted)sfx.pick()};
+const TH=['black','white','chrome'];$('#thm').onclick=()=>{const n=TH[(TH.indexOf(document.documentElement.dataset.theme)+1)%3];document.documentElement.dataset.theme=n;btxt();sfx.theme()};
+document.querySelectorAll('button').forEach(b=>b.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')sfx.hover()}));
+let entered=0;const enter=()=>{if(entered)return;entered=1;try{sfx.boot()}catch(e){}const sp=$('#splash');sp.classList.add('out');setTimeout(()=>sp.remove(),900)};$('#splash').addEventListener('click',enter);addEventListener('keydown',e=>{if(e.key==='Enter'&&!entered){e.preventDefault();enter()}});
+/* ---------- learn page ---------- */
+const T={lua:{n:`-- XFMUX · Normal GUI (text menu) - runs in any Lua 5.x
+-- Learn: tables, functions, ipairs, string joining
+local items = {"Play", "Settings", "Quit"}
+
+local function drawMenu()
+  print("=== MY FIRST MENU ===")
+  for i, name in ipairs(items) do
+    print(i .. ") " .. name)
+  end
+end
+
+drawMenu()
+
+-- TODO make it better: read a choice with io.read(),
+-- add more items, repeat until the player picks Quit
+`,h:`-- XFMUX · High Quality GUI (boxed console UI with colors)
+-- Learn: string.rep, ANSI colors, functions, tables
+local C = {reset = "\\27[0m", bold = "\\27[1m", white = "\\27[97m"}
+local WIDTH = 30
+
+local function line(text)
+  return "║ " .. text .. string.rep(" ", WIDTH - #text) .. " ║"
+end
+
+local function box(title, rows)
+  print(C.white .. "╔" .. string.rep("═", WIDTH + 2) .. "╗")
+  print(C.bold .. line(title) .. C.reset .. C.white)
+  print("╠" .. string.rep("═", WIDTH + 2) .. "╣")
+  for i, row in ipairs(rows) do
+    print(line(i .. "  " .. row))
+  end
+  print("╚" .. string.rep("═", WIDTH + 2) .. "╝" .. C.reset)
+end
+
+box("XFMUX MENU", {"Play", "Settings", "Quit"})
+
+-- TODO make it better: a selection loop with io.read(),
+-- a different color per row, a loading bar
+`},luau:{n:`-- XFMUX · Normal GUI (LocalScript in StarterPlayerScripts)
+-- Learn: Instance.new, properties, Parent, events
+local Players = game:GetService("Players")
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "NormalGui"
+gui.ResetOnSpawn = false
+gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 260, 0, 160)
+frame.Position = UDim2.new(0.5, -130, 0.5, -80)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 36)
+title.BackgroundTransparency = 1
+title.Text = "My First GUI"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = frame
+
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 180, 0, 44)
+button.Position = UDim2.new(0.5, -90, 0, 80)
+button.BackgroundColor3 = Color3.fromRGB(230, 230, 230)
+button.Text = "Click me"
+button.Parent = frame
+
+local clicks = 0
+button.MouseButton1Click:Connect(function()
+  clicks += 1
+  button.Text = "Clicked " .. clicks
+end)
+
+-- TODO make it better: add a UICorner, a close button, a reset button
+`,h:`-- XFMUX · High Quality GUI (LocalScript in StarterPlayerScripts)
+-- Learn: TweenService, UICorner, UIStroke, UIGradient, hover effects
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "HQGui"
+gui.ResetOnSpawn = false
+gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local function round(obj, radius)
+  local corner = Instance.new("UICorner")
+  corner.CornerRadius = UDim.new(0, radius)
+  corner.Parent = obj
+end
+
+local main = Instance.new("Frame")
+main.AnchorPoint = Vector2.new(0.5, 0.5)
+main.Position = UDim2.fromScale(0.5, 0.5)
+main.Size = UDim2.fromOffset(0, 0)
+main.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
+main.Parent = gui
+round(main, 14)
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(190, 195, 205)
+stroke.Thickness = 1.5
+stroke.Parent = main
+
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new(Color3.fromRGB(38, 38, 42), Color3.fromRGB(8, 8, 10))
+gradient.Rotation = 90
+gradient.Parent = main
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 44)
+title.BackgroundTransparency = 1
+title.Text = "XFMUX Menu"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.fromRGB(240, 242, 245)
+title.Parent = main
+
+local btn = Instance.new("TextButton")
+btn.Size = UDim2.fromOffset(220, 48)
+btn.Position = UDim2.new(0.5, -110, 0, 100)
+btn.BackgroundColor3 = Color3.fromRGB(225, 228, 232)
+btn.Text = "Start"
+btn.Font = Enum.Font.GothamBold
+btn.TextSize = 16
+btn.AutoButtonColor = false
+btn.Parent = main
+round(btn, 10)
+
+local hover = TweenInfo.new(0.25, Enum.EasingStyle.Quad)
+btn.MouseEnter:Connect(function()
+  TweenService:Create(btn, hover, {Size = UDim2.fromOffset(232, 52)}):Play()
+end)
+btn.MouseLeave:Connect(function()
+  TweenService:Create(btn, hover, {Size = UDim2.fromOffset(220, 48)}):Play()
+end)
+
+-- open animation
+local open = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+TweenService:Create(main, open, {Size = UDim2.fromOffset(300, 190)}):Play()
+
+-- TODO make it better: make the window draggable, add tabs,
+-- add a close button that tweens the window away, save settings
+`,fly:`-- Fly (LocalScript in StarterPlayerScripts) - for your own game, e.g. a gamepass or admin tool
+-- Learn: UserInputService, RunService, LinearVelocity, camera direction
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local SPEED = 60
+local flying = false
+local velocity, attachment, connection
+
+local function stopFly()
+  flying = false
+  if connection then connection:Disconnect() end
+  if velocity then velocity:Destroy() end
+  if attachment then attachment:Destroy() end
+end
+
+local function startFly()
+  local char = player.Character
+  local root = char and char:FindFirstChild("HumanoidRootPart")
+  if not root then return end
+  flying = true
+  attachment = Instance.new("Attachment", root)
+  velocity = Instance.new("LinearVelocity")
+  velocity.Attachment0 = attachment
+  velocity.MaxForce = math.huge
+  velocity.VelocityConstraintMode = Enum.VelocityConstraintMode.Vector
+  velocity.Parent = root
+  connection = RunService.RenderStepped:Connect(function()
+    local cam = workspace.CurrentCamera.CFrame
+    local dir = Vector3.zero
+    if UIS:IsKeyDown(Enum.KeyCode.W) then dir += cam.LookVector end
+    if UIS:IsKeyDown(Enum.KeyCode.S) then dir -= cam.LookVector end
+    if UIS:IsKeyDown(Enum.KeyCode.A) then dir -= cam.RightVector end
+    if UIS:IsKeyDown(Enum.KeyCode.D) then dir += cam.RightVector end
+    velocity.VectorVelocity = dir * SPEED
+  end)
+end
+
+UIS.InputBegan:Connect(function(input, typing)
+  if typing or input.KeyCode ~= Enum.KeyCode.F then return end
+  if flying then stopFly() else startFly() end
+end)
+
+-- TODO make it better: a mobile fly button, Up/Down keys,
+-- smooth speed changes, stop flying when the player dies
+`,speed:`-- Speed boost (LocalScript in StarterPlayerScripts) - hold Shift to sprint
+-- Learn: Humanoid.WalkSpeed, InputBegan / InputEnded
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local WALK, SPRINT = 16, 32
+
+local function setSpeed(speed)
+  local char = player.Character
+  local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+  if humanoid then humanoid.WalkSpeed = speed end
+end
+
+UIS.InputBegan:Connect(function(input, typing)
+  if not typing and input.KeyCode == Enum.KeyCode.LeftShift then setSpeed(SPRINT) end
+end)
+
+UIS.InputEnded:Connect(function(input)
+  if input.KeyCode == Enum.KeyCode.LeftShift then setSpeed(WALK) end
+end)
+
+-- TODO make it better: a stamina bar, a camera FOV tween while sprinting,
+-- and check the speed on the server so players cannot cheat
+`,esp:`-- Player highlight (LocalScript in StarterPlayerScripts) - e.g. show teammates in your own game
+-- Learn: Highlight, BillboardGui, PlayerAdded, CharacterAdded
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+
+local function mark(player)
+  local function onCharacter(char)
+    local highlight = Instance.new("Highlight")
+    highlight.FillTransparency = 0.7
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+    highlight.Parent = char
+
+    local head = char:WaitForChild("Head")
+    local tag = Instance.new("BillboardGui")
+    tag.Size = UDim2.fromOffset(120, 24)
+    tag.StudsOffset = Vector3.new(0, 2.5, 0)
+    tag.AlwaysOnTop = true
+    tag.Adornee = head
+    tag.Parent = head
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.fromScale(1, 1)
+    label.BackgroundTransparency = 1
+    label.Text = player.DisplayName
+    label.TextColor3 = Color3.new(1, 1, 1)
+    label.Font = Enum.Font.GothamBold
+    label.TextScaled = true
+    label.Parent = tag
+  end
+  if player.Character then onCharacter(player.Character) end
+  player.CharacterAdded:Connect(onCharacter)
+end
+
+for _, p in ipairs(Players:GetPlayers()) do
+  if p ~= localPlayer and p.Team == localPlayer.Team then mark(p) end
+end
+Players.PlayerAdded:Connect(function(p)
+  if p.Team == localPlayer.Team then mark(p) end
+end)
+
+-- TODO make it better: color by health, show distance, clean up when players leave
+`,vfx:`-- VFX (Script in ServerScriptService) - a glowing orb with particles and a pulse
+-- Learn: ParticleEmitter, PointLight, TweenService, looping tweens
+local TweenService = game:GetService("TweenService")
+
+local orb = Instance.new("Part")
+orb.Shape = Enum.PartType.Ball
+orb.Size = Vector3.new(3, 3, 3)
+orb.Position = Vector3.new(0, 8, 0)
+orb.Anchored = true
+orb.Material = Enum.Material.Neon
+orb.Color = Color3.fromRGB(220, 225, 235)
+orb.Parent = workspace
+
+local light = Instance.new("PointLight")
+light.Range = 16
+light.Brightness = 2
+light.Parent = orb
+
+local sparks = Instance.new("ParticleEmitter")
+sparks.Rate = 40
+sparks.Lifetime = NumberRange.new(0.6, 1.2)
+sparks.Speed = NumberRange.new(4, 8)
+sparks.SpreadAngle = Vector2.new(180, 180)
+sparks.Size = NumberSequence.new(0.5, 0)
+sparks.LightEmission = 1
+sparks.Parent = orb
+
+local pulse = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+TweenService:Create(orb, pulse, {Size = Vector3.new(4.5, 4.5, 4.5)}):Play()
+
+-- TODO make it better: shift the color over time, burst when touched,
+-- add a Trail and a Sound
+`,intro:`-- Intro screen (LocalScript in StarterPlayerScripts)
+-- Learn: full-screen GUI, TweenService, task.wait, fading text
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local gui = Instance.new("ScreenGui")
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.DisplayOrder = 100
+gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local bg = Instance.new("Frame")
+bg.Size = UDim2.fromScale(1, 1)
+bg.BackgroundColor3 = Color3.new(0, 0, 0)
+bg.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.fromScale(1, 0.2)
+title.Position = UDim2.fromScale(0, 0.4)
+title.BackgroundTransparency = 1
+title.Text = "XFMUX"
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 64
+title.TextColor3 = Color3.fromRGB(235, 238, 242)
+title.TextTransparency = 1
+title.Parent = bg
+
+local fade = TweenInfo.new(1.2, Enum.EasingStyle.Quad)
+TweenService:Create(title, fade, {TextTransparency = 0}):Play()
+task.wait(2.5)
+TweenService:Create(title, fade, {TextTransparency = 1}):Play()
+local out = TweenService:Create(bg, fade, {BackgroundTransparency = 1})
+out:Play()
+out.Completed:Wait()
+gui:Destroy()
+
+-- TODO make it better: a loading bar, a sound, a skip button
+`,remote:`-- RemoteEvent Fire - talk between client and server
+-- Setup: put a RemoteEvent named "Greet" inside ReplicatedStorage
+
+----- LocalScript (StarterPlayerScripts) -----
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local greet = ReplicatedStorage:WaitForChild("Greet")
+
+greet:FireServer("Hello from the client!")      -- client to server
+greet.OnClientEvent:Connect(function(message)   -- server to client
+  print("Server says:", message)
+end)
+
+----- Script (ServerScriptService) -----
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local greet = ReplicatedStorage:WaitForChild("Greet")
+
+greet.OnServerEvent:Connect(function(player, text)
+  if typeof(text) ~= "string" then return end   -- never trust the client
+  print(player.Name, "sent:", text)
+  greet:FireClient(player, "Got it, " .. player.Name)
+  -- greet:FireAllClients("Hi everyone")
+end)
+
+-- TODO make it better: add a cooldown, validate more, try a RemoteFunction
+`,stats:`-- Leaderstats (Script in ServerScriptService)
+-- Learn: PlayerAdded, Folder, IntValue, task.spawn
+local Players = game:GetService("Players")
+
+Players.PlayerAdded:Connect(function(player)
+  local stats = Instance.new("Folder")
+  stats.Name = "leaderstats"
+  stats.Parent = player
+
+  local coins = Instance.new("IntValue")
+  coins.Name = "Coins"
+  coins.Value = 0
+  coins.Parent = stats
+
+  task.spawn(function()
+    while player.Parent do
+      task.wait(5)
+      coins.Value += 1
+    end
+  end)
+end)
+
+-- TODO make it better: save with DataStoreService, add a Level stat
+`,tp:`-- Teleport pad (Script inside a Part)
+-- Learn: Touched, FindFirstChildOfClass, CFrame, debounce
+local pad = script.Parent
+local DESTINATION = Vector3.new(0, 10, 50)
+local busy = false
+
+pad.Touched:Connect(function(hit)
+  local humanoid = hit.Parent:FindFirstChildOfClass("Humanoid")
+  local root = hit.Parent:FindFirstChild("HumanoidRootPart")
+  if busy or not humanoid or not root then return end
+  busy = true
+  root.CFrame = CFrame.new(DESTINATION)
+  task.wait(1)
+  busy = false
+end)
+
+-- TODO make it better: use a second pad as the target, add a fade effect
+`}};
+const H={fly:`-- Fly - high quality (LocalScript in StarterPlayerScripts), for your own game
+-- Learn: smoothing with Lerp, Space / Ctrl for up and down, FOV tween, cleanup on death
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+local SPEED, SMOOTH = 70, 0.15
+local flying, current = false, Vector3.zero
+local attachment, velocity, loop
+
+local function fov(value)
+  TweenService:Create(workspace.CurrentCamera, TweenInfo.new(0.3), {FieldOfView = value}):Play()
+end
+
+local function stop()
+  flying = false
+  if loop then loop:Disconnect() end
+  if velocity then velocity:Destroy() end
+  if attachment then attachment:Destroy() end
+  fov(70)
+end
+
+local function start()
+  local char = player.Character
+  local root = char and char:FindFirstChild("HumanoidRootPart")
+  local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+  if not (root and humanoid) then return end
+  flying, current = true, Vector3.zero
+  attachment = Instance.new("Attachment", root)
+  velocity = Instance.new("LinearVelocity")
+  velocity.Attachment0 = attachment
+  velocity.MaxForce = math.huge
+  velocity.VelocityConstraintMode = Enum.VelocityConstraintMode.Vector
+  velocity.Parent = root
+  humanoid.Died:Once(stop)
+  fov(85)
+  loop = RunService.RenderStepped:Connect(function()
+    local cam = workspace.CurrentCamera.CFrame
+    local dir = Vector3.zero
+    if UIS:IsKeyDown(Enum.KeyCode.W) then dir += cam.LookVector end
+    if UIS:IsKeyDown(Enum.KeyCode.S) then dir -= cam.LookVector end
+    if UIS:IsKeyDown(Enum.KeyCode.A) then dir -= cam.RightVector end
+    if UIS:IsKeyDown(Enum.KeyCode.D) then dir += cam.RightVector end
+    if UIS:IsKeyDown(Enum.KeyCode.Space) then dir += Vector3.yAxis end
+    if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then dir -= Vector3.yAxis end
+    current = current:Lerp(dir * SPEED, SMOOTH)
+    velocity.VectorVelocity = current
+  end)
+end
+
+UIS.InputBegan:Connect(function(input, typing)
+  if typing or input.KeyCode ~= Enum.KeyCode.F then return end
+  if flying then stop() else start() end
+end)
+
+-- TODO make it better: a mobile fly button, a speed slider, a trail effect
+`,speed:`-- Speed - high quality (LocalScript): sprint with a stamina bar and a camera FOV tween
+-- Learn: Heartbeat delta time, math.max / math.min, TweenService, UICorner
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+local WALK, SPRINT, MAX = 16, 32, 100
+local stamina, sprinting = MAX, false
+
+local gui = Instance.new("ScreenGui")
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local back = Instance.new("Frame")
+back.Size = UDim2.fromOffset(200, 8)
+back.Position = UDim2.new(0.5, -100, 1, -40)
+back.BackgroundColor3 = Color3.fromRGB(25, 25, 28)
+back.Parent = gui
+local fill = Instance.new("Frame")
+fill.Size = UDim2.fromScale(1, 1)
+fill.BackgroundColor3 = Color3.fromRGB(225, 228, 232)
+fill.Parent = back
+Instance.new("UICorner", back).CornerRadius = UDim.new(1, 0)
+Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
+
+local function fov(value)
+  TweenService:Create(workspace.CurrentCamera, TweenInfo.new(0.25), {FieldOfView = value}):Play()
+end
+
+UIS.InputBegan:Connect(function(input, typing)
+  if not typing and input.KeyCode == Enum.KeyCode.LeftShift and stamina > 10 then
+    sprinting = true
+    fov(85)
+  end
+end)
+
+UIS.InputEnded:Connect(function(input)
+  if input.KeyCode == Enum.KeyCode.LeftShift then
+    sprinting = false
+    fov(70)
+  end
+end)
+
+RunService.Heartbeat:Connect(function(dt)
+  local char = player.Character
+  local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+  if not humanoid then return end
+  if sprinting then
+    stamina = math.max(stamina - 25 * dt, 0)
+    if stamina == 0 then
+      sprinting = false
+      fov(70)
+    end
+  else
+    stamina = math.min(stamina + 15 * dt, MAX)
+  end
+  humanoid.WalkSpeed = sprinting and SPRINT or WALK
+  fill.Size = UDim2.fromScale(stamina / MAX, 1)
+end)
+
+-- TODO make it better: check the speed on the server, add a sprint sound
+`,esp:`-- ESP / highlight - high quality (LocalScript): color by health, toggle with E, cleanup
+-- Learn: Highlight, HealthChanged, Color3:Lerp, PlayerRemoving
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local localPlayer = Players.LocalPlayer
+local enabled = true
+local marks = {}
+
+local function friendly(p)
+  return p ~= localPlayer and p.Team == localPlayer.Team
+end
+
+local function mark(player)
+  local function onCharacter(char)
+    if marks[player] then marks[player]:Destroy() end
+    local humanoid = char:WaitForChild("Humanoid")
+    local highlight = Instance.new("Highlight")
+    highlight.Enabled = enabled
+    highlight.FillTransparency = 0.6
+    highlight.Parent = char
+    marks[player] = highlight
+
+    local function update()
+      local pct = humanoid.Health / humanoid.MaxHealth
+      highlight.FillColor = Color3.fromRGB(255, 70, 70):Lerp(Color3.fromRGB(235, 240, 245), pct)
+    end
+    humanoid.HealthChanged:Connect(update)
+    update()
+  end
+  if player.Character then onCharacter(player.Character) end
+  player.CharacterAdded:Connect(onCharacter)
+end
+
+for _, p in ipairs(Players:GetPlayers()) do
+  if friendly(p) then mark(p) end
+end
+Players.PlayerAdded:Connect(function(p)
+  if friendly(p) then mark(p) end
+end)
+Players.PlayerRemoving:Connect(function(p)
+  if marks[p] then
+    marks[p]:Destroy()
+    marks[p] = nil
+  end
+end)
+
+UIS.InputBegan:Connect(function(input, typing)
+  if typing or input.KeyCode ~= Enum.KeyCode.E then return end
+  enabled = not enabled
+  for _, h in pairs(marks) do h.Enabled = enabled end
+end)
+
+-- TODO make it better: add name tags, distance text, a settings button
+`,vfx:`-- VFX - high quality (Script in ServerScriptService): color-shifting orb with a touch burst
+-- Learn: Color3.fromHSV, task.spawn loops, Touched + cooldown, Debris, ParticleEmitter:Emit
+local TweenService = game:GetService("TweenService")
+local Debris = game:GetService("Debris")
+
+local orb = Instance.new("Part")
+orb.Shape = Enum.PartType.Ball
+orb.Size = Vector3.new(3, 3, 3)
+orb.Position = Vector3.new(0, 8, 0)
+orb.Anchored = true
+orb.Material = Enum.Material.Neon
+orb.Parent = workspace
+
+local light = Instance.new("PointLight")
+light.Range = 18
+light.Parent = orb
+
+local sparks = Instance.new("ParticleEmitter")
+sparks.Rate = 30
+sparks.Lifetime = NumberRange.new(0.6, 1.2)
+sparks.Speed = NumberRange.new(4, 8)
+sparks.SpreadAngle = Vector2.new(180, 180)
+sparks.Size = NumberSequence.new(0.5, 0)
+sparks.LightEmission = 1
+sparks.Parent = orb
+
+local pulse = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+TweenService:Create(orb, pulse, {Size = Vector3.new(4.5, 4.5, 4.5)}):Play()
+
+task.spawn(function()
+  local hue = 0
+  while orb.Parent do
+    hue = (hue + 0.004) % 1
+    local color = Color3.fromHSV(hue, 0.15, 1)
+    orb.Color = color
+    light.Color = color
+    sparks.Color = ColorSequence.new(color)
+    task.wait()
+  end
+end)
+
+local cooling = false
+orb.Touched:Connect(function(hit)
+  if cooling or not hit.Parent:FindFirstChildOfClass("Humanoid") then return end
+  cooling = true
+  sparks:Emit(60)
+  local ring = Instance.new("Part")
+  ring.Shape = Enum.PartType.Ball
+  ring.Anchored = true
+  ring.CanCollide = false
+  ring.Material = Enum.Material.Neon
+  ring.Transparency = 0.3
+  ring.Size = Vector3.one
+  ring.Position = orb.Position
+  ring.Parent = workspace
+  TweenService:Create(ring, TweenInfo.new(0.6), {Size = Vector3.new(14, 14, 14), Transparency = 1}):Play()
+  Debris:AddItem(ring, 0.7)
+  task.wait(1)
+  cooling = false
+end)
+
+-- TODO make it better: add a Sound, a Trail, and let players collect the orb
+`,intro:`-- Intro - high quality (LocalScript): title, loading bar and a skip button
+-- Learn: chained tweens, UICorner, Completed:Wait, finishing early with a flag
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local gui = Instance.new("ScreenGui")
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.DisplayOrder = 100
+gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local bg = Instance.new("Frame")
+bg.Size = UDim2.fromScale(1, 1)
+bg.BackgroundColor3 = Color3.new(0, 0, 0)
+bg.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.fromScale(1, 0.2)
+title.Position = UDim2.fromScale(0, 0.36)
+title.BackgroundTransparency = 1
+title.Text = "XFMUX"
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 64
+title.TextColor3 = Color3.fromRGB(235, 238, 242)
+title.TextTransparency = 1
+title.Parent = bg
+
+local track = Instance.new("Frame")
+track.AnchorPoint = Vector2.new(0.5, 0)
+track.Position = UDim2.fromScale(0.5, 0.58)
+track.Size = UDim2.fromOffset(260, 6)
+track.BackgroundColor3 = Color3.fromRGB(30, 30, 34)
+track.Parent = bg
+local bar = Instance.new("Frame")
+bar.Size = UDim2.fromScale(0, 1)
+bar.BackgroundColor3 = Color3.fromRGB(235, 238, 242)
+bar.Parent = track
+Instance.new("UICorner", track).CornerRadius = UDim.new(1, 0)
+Instance.new("UICorner", bar).CornerRadius = UDim.new(1, 0)
+
+local skip = Instance.new("TextButton")
+skip.AnchorPoint = Vector2.new(1, 1)
+skip.Position = UDim2.new(1, -20, 1, -20)
+skip.Size = UDim2.fromOffset(80, 32)
+skip.BackgroundTransparency = 1
+skip.Text = "Skip"
+skip.Font = Enum.Font.Gotham
+skip.TextSize = 16
+skip.TextColor3 = Color3.fromRGB(150, 155, 162)
+skip.Parent = bg
+
+local done = false
+local function finish()
+  if done then return end
+  done = true
+  local fade = TweenInfo.new(0.8)
+  local out = TweenService:Create(bg, fade, {BackgroundTransparency = 1})
+  TweenService:Create(title, fade, {TextTransparency = 1}):Play()
+  track:Destroy()
+  skip:Destroy()
+  out:Play()
+  out.Completed:Wait()
+  gui:Destroy()
+end
+
+skip.MouseButton1Click:Connect(finish)
+TweenService:Create(title, TweenInfo.new(1.2), {TextTransparency = 0}):Play()
+TweenService:Create(bar, TweenInfo.new(3.5, Enum.EasingStyle.Quad), {Size = UDim2.fromScale(1, 1)}):Play()
+task.delay(3.8, finish)
+
+-- TODO make it better: real loading with ContentProvider:PreloadAsync, a sound
+`,remote:`-- RemoteEvent - high quality: cooldown, validation and a reply
+-- Setup: put a RemoteEvent named "Greet" inside ReplicatedStorage
+
+----- Script (ServerScriptService) -----
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local greet = ReplicatedStorage:WaitForChild("Greet")
+local COOLDOWN = 1
+local last = {}
+
+greet.OnServerEvent:Connect(function(player, text)
+  if typeof(text) ~= "string" or #text == 0 or #text > 50 then return end
+  local now = os.clock()
+  if last[player] and now - last[player] < COOLDOWN then return end
+  last[player] = now
+  greet:FireClient(player, "Got it, " .. player.DisplayName .. ": " .. text)
+end)
+
+Players.PlayerRemoving:Connect(function(p)
+  last[p] = nil
+end)
+
+----- LocalScript (StarterPlayerScripts) -----
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local greet = ReplicatedStorage:WaitForChild("Greet")
+
+greet.OnClientEvent:Connect(function(message)
+  print("Server says:", message)
+end)
+greet:FireServer("Hello from the client!")
+
+-- TODO make it better: use a RemoteFunction for replies, rate limit per action
+`,stats:`-- Leaderstats - high quality (Script in ServerScriptService): saves Coins with a DataStore
+-- Learn: GetAsync / SetAsync inside pcall, PlayerRemoving, BindToClose
+-- Turn on "Enable Studio Access to API Services" to test saving in Studio
+local Players = game:GetService("Players")
+local DataStoreService = game:GetService("DataStoreService")
+local store = DataStoreService:GetDataStore("XFMUX_Coins")
+
+local function save(player)
+  local stats = player:FindFirstChild("leaderstats")
+  local coins = stats and stats:FindFirstChild("Coins")
+  if not coins then return end
+  local ok, err = pcall(function()
+    store:SetAsync("u" .. player.UserId, coins.Value)
+  end)
+  if not ok then warn("Save failed:", err) end
+end
+
+Players.PlayerAdded:Connect(function(player)
+  local stats = Instance.new("Folder")
+  stats.Name = "leaderstats"
+  stats.Parent = player
+
+  local coins = Instance.new("IntValue")
+  coins.Name = "Coins"
+  coins.Parent = stats
+
+  local ok, saved = pcall(function()
+    return store:GetAsync("u" .. player.UserId)
+  end)
+  coins.Value = ok and saved or 0
+
+  task.spawn(function()
+    while player.Parent do
+      task.wait(5)
+      coins.Value += 1
+    end
+  end)
+end)
+
+Players.PlayerRemoving:Connect(save)
+game:BindToClose(function()
+  for _, player in ipairs(Players:GetPlayers()) do save(player) end
+end)
+
+-- TODO make it better: retry failed saves, add a Level stat, auto-save every minute
+`,tp:`-- Teleport pad - high quality (Script inside a Part): linked pad, burst effect, cooldown
+-- Setup: add a second Part named "PadB" to Workspace
+local Debris = game:GetService("Debris")
+local pad = script.Parent
+local target = workspace:WaitForChild("PadB")
+local COOLDOWN = 2
+local last = setmetatable({}, {__mode = "k"})
+
+local function burst(part)
+  local emitter = Instance.new("ParticleEmitter")
+  emitter.Rate = 0
+  emitter.Lifetime = NumberRange.new(0.5, 1)
+  emitter.Speed = NumberRange.new(6, 12)
+  emitter.SpreadAngle = Vector2.new(180, 180)
+  emitter.LightEmission = 1
+  emitter.Parent = part
+  emitter:Emit(40)
+  Debris:AddItem(emitter, 1.5)
+end
+
+pad.Touched:Connect(function(hit)
+  local char = hit.Parent
+  local humanoid = char:FindFirstChildOfClass("Humanoid")
+  local root = char:FindFirstChild("HumanoidRootPart")
+  if not humanoid or not root then return end
+  local now = os.clock()
+  if last[char] and now - last[char] < COOLDOWN then return end
+  last[char] = now
+  burst(pad)
+  root.CFrame = target.CFrame + Vector3.new(0, 4, 0)
+  burst(target)
+end)
+
+-- TODO make it better: let PadB teleport back, add a sound, a cooldown bar
+`};
+const LESS={lua:{b:{m:'a text menu for your first program',s:['Variables, print and strings','Tables and for loops','Functions and return values'],c:'Add a Quit option that prints a goodbye message.'},
+ a:{m:'a to-do list manager',s:['Tables as objects and simple classes with metatables','String patterns with string.match and string.gsub','Error handling with pcall and error'],c:'Save items to a file with io.open and load them back.'},
+ p:{m:'a reusable UI module',s:['Modules with require and clean return tables','Closures and coroutines for animation loops','Speed: cache globals in locals, build strings with table.concat'],c:'Add themes and a plugin system so others can extend it.'}},
+ luau:{b:{s:['Instances and properties (Instance.new, Parent)','Events with :Connect()','Variables, functions and if statements'],c:'Change the numbers and colors, then test what changes.'},a:{s:['TweenService for smooth motion','Services like RunService and UserInputService','RemoteEvents between client and server'],c:'Add a keybind or a toggle button to the script.'},p:{s:['ModuleScripts and classes with --!strict types','Cleaning up connections so nothing leaks','Validating everything on the server'],c:'Split it into a reusable module that other scripts can require.'}}};
+const ln={l:'luau',v:'b',t:'gui',q:'n'};
+const TOP=[['gui','GUI','A window with a button. LocalScript in StarterPlayerScripts.'],['fly','Fly','Toggle flying with F, for your own game (gamepass or admin tool). LocalScript.'],['speed','Speed','Hold Shift to sprint by changing WalkSpeed. LocalScript.'],['esp','ESP','Highlights teammates in your own game. LocalScript.'],['vfx','VFX','A glowing orb with particles and light. Script in ServerScriptService.'],['intro','Intro','A full-screen title screen. LocalScript.'],['remote','RemoteEvent Fire','Client to server and back. Needs a RemoteEvent named Greet in ReplicatedStorage.'],['stats','Leaderstats','A Coins leaderboard. Script in ServerScriptService.'],['tp','Teleport pad','Touch a part to teleport. Script inside the Part.']];
+const getCode=()=>ln.t==='gui'?T.luau[ln.q]:ln.q==='n'?T.luau[ln.t]:H[ln.t];
+function drawLearn(){const L=LESS.luau[ln.v],tp=TOP.find(x=>x[0]===ln.t),hq=ln.q==='h';
+$('#lesson').innerHTML=`<b>${tr('You will make')}: ${tp[1]} (${tr(hq?'High quality':'Normal').toLowerCase()})</b><ol>${L.s.map(x=>`<li>${x}</li>`).join('')}</ol><div><b>${tr('Challenge')}:</b> ${L.c}</div>`;
+$('#tpl').innerHTML=TOP.map(x=>`<button data-v="${x[0]}"${x[0]===ln.t?' class="on"':''}>${x[1]}</button>`).join('');
+$('#tdesc').textContent=tp[2]+' '+tr(hq?'High quality adds smooth animation, cleanup and safer code.':'Normal keeps it short and easy to read.');
+$('#lfn').textContent=tp[1].toLowerCase().replace(/ /g,'_')+(hq?'_hq':'')+'.luau';$('#lcode').innerHTML=hl(getCode(),'luau')}
+[['#lang','l'],['#lvl','v'],['#tpl','t'],['#qual','q']].forEach(([id,k])=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.classList.contains('soon')){toast(b.dataset.soon+': '+tr('Coming Soon'));tone(220,.15,'square',.03,140);return}
+ $(id).querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));ln[k]=k==='l'?b.dataset.l:b.dataset.v;sfx.pick();drawLearn()}));
+function show(v){$('#app').classList.toggle('learn',v==='ln');document.querySelectorAll('.nv').forEach(b=>b.classList.toggle('on',b.dataset.v===v));if(v==='ed'){measure();refresh()}sfx.lang()}
+$('.nav').addEventListener('click',e=>{const b=e.target.closest('.nv');if(b)show(b.dataset.v)});
+async function cp(t){try{await navigator.clipboard.writeText(t);return true}catch(e){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}x.remove();return ok}}
+$('#lcp').onclick=async()=>{const ok=await cp(getCode());toast(ok?'Template copied':'Copy failed');if(ok)sfx.copy()};
+$('#lop').onclick=()=>{if(cur!==ln.l)setLang(ln.l);ta.value=getCode();lines=0;ta.scrollTop=0;show('ed');toast('Template opened in the editor')};
+/* ---------- languages / settings ---------- */
+const TRN=[
+['Keyboard','キーボード','Keyboard','Papan kekunci','键盘','لوحة المفاتيح'],
+['Editor','エディタ','Editor','Editor','编辑器','المحرر'],['Learn','学ぶ','Belajar','Belajar','学习','تعلّم'],
+['Settings','設定','Pengaturan','Tetapan','设置','الإعدادات'],['Language','言語','Bahasa','Bahasa','语言','اللغة'],
+['Sound effects','効果音','Efek suara','Kesan bunyi','音效','المؤثرات الصوتية'],['On','オン','Hidup','Hidup','开','تشغيل'],['Off','オフ','Mati','Mati','关','إيقاف'],
+['Theme','テーマ','Tema','Tema','主题','السمة'],['Black','ブラック','Hitam','Hitam','黑色','أسود'],['White','ホワイト','Putih','Putih','白色','أبيض'],['Chrome','クローム','Krom','Krom','铬色','كروم'],
+['More Coming Soon','さらに近日公開','Segera hadir lebih banyak','Lagi akan datang','更多语言即将推出','المزيد قريباً'],['Close','閉じる','Tutup','Tutup','关闭','إغلاق'],
+['Copy','コピー','Salin','Salin','复制','نسخ'],['Copied ✓','コピーしました ✓','Tersalin ✓','Disalin ✓','已复制 ✓','تم النسخ ✓'],['Copy failed','コピーに失敗','Gagal menyalin','Gagal menyalin','复制失败','فشل النسخ'],
+['Code copied to clipboard','コードをコピーしました','Kode disalin ke papan klip','Kod disalin ke papan keratan','代码已复制到剪贴板','تم نسخ الكود إلى الحافظة'],
+['Select the code and copy it manually','コードを選択して手動でコピーしてください','Pilih kode lalu salin secara manual','Pilih kod dan salin secara manual','请选中代码后手动复制','حدّد الكود وانسخه يدوياً'],
+['Template copied','テンプレートをコピーしました','Template disalin','Templat disalin','模板已复制','تم نسخ القالب'],
+['Template opened in the editor','テンプレートをエディタで開きました','Template dibuka di editor','Templat dibuka dalam editor','模板已在编辑器中打开','تم فتح القالب في المحرر'],
+['Open in editor','エディタで開く','Buka di editor','Buka dalam editor','在编辑器中打开','افتح في المحرر'],['Coming Soon','近日公開','Segera Hadir','Akan Datang','即将推出','قريباً'],
+['Learn scripting','スクリプトを学ぶ','Belajar scripting','Belajar skrip','学习脚本编写','تعلّم البرمجة النصية'],
+['Pick a topic, quality and level. Open it in the editor and make it better.','トピック、品質、レベルを選び、エディタで開いて改良しよう。','Pilih topik, kualitas, dan level. Buka di editor lalu buat lebih baik.','Pilih topik, kualiti dan tahap. Buka dalam editor dan jadikan lebih baik.','选择主题、质量和等级，在编辑器中打开并改进它。','اختر الموضوع والجودة والمستوى، ثم افتحه في المحرر وطوّره.'],
+['1. Language','1. 言語','1. Bahasa','1. Bahasa','1. 语言','1. اللغة'],['2. What do you want to make?','2. 何を作りたいですか？','2. Apa yang ingin kamu buat?','2. Apa yang anda mahu buat?','2. 你想做什么？','2. ماذا تريد أن تصنع؟'],
+['3. Quality','3. 品質','3. Kualitas','3. Kualiti','3. 质量','3. الجودة'],['4. Your level','4. レベル','4. Level kamu','4. Tahap anda','4. 你的等级','4. مستواك'],
+['Normal','通常','Normal','Biasa','普通','عادي'],['High quality','高品質','Kualitas tinggi','Kualiti tinggi','高质量','جودة عالية'],
+['Beginner','初級','Pemula','Pemula','初级','مبتدئ'],['Advanced','上級','Mahir','Mahir','高级','متقدم'],['Professional','プロ','Profesional','Profesional','专业','محترف'],
+['GUIs, movement, VFX and more','GUI・移動・VFXなど','GUI, gerakan, VFX, dan lainnya','GUI, pergerakan, VFX dan banyak lagi','GUI、移动、特效等','الواجهات والحركة والمؤثرات والمزيد'],
+['You will make','作るもの','Yang akan kamu buat','Yang akan anda buat','你将制作','ستصنع'],['Challenge','チャレンジ','Tantangan','Cabaran','挑战','تحدٍّ'],
+['Normal keeps it short and easy to read.','通常版は短くて読みやすいです。','Normal singkat dan mudah dibaca.','Biasa ringkas dan mudah dibaca.','普通版简短易读。','النسخة العادية قصيرة وسهلة القراءة.'],
+['High quality adds smooth animation, cleanup and safer code.','高品質版は滑らかなアニメーション、後処理、安全なコードを追加します。','Kualitas tinggi menambah animasi halus, pembersihan, dan kode yang lebih aman.','Kualiti tinggi menambah animasi lancar, pembersihan dan kod yang lebih selamat.','高质量版增加了流畅动画、清理和更安全的代码。','الجودة العالية تضيف حركة سلسة وتنظيفاً وكوداً أكثر أماناً.'],
+['Autocorrect on','自動修正オン','Koreksi otomatis aktif','Pembetulan automatik aktif','自动纠错已开启','التصحيح التلقائي مفعّل'],['Auto-corrected','自動修正','Dikoreksi otomatis','Dibetulkan automatik','已自动纠正','تم التصحيح التلقائي'],
+['Made by Scripterblabla','制作: Scripterblabla','Dibuat oleh Scripterblabla','Dibuat oleh Scripterblabla','制作者：Scripterblabla','من تطوير Scripterblabla'],
+['Ln','行','Brs','Brs','行','سطر'],['Col','列','Kol','Lajur','列','عمود'],['lines','行','baris','baris','行','أسطر'],['chars','文字','karakter','aksara','字符','حرف']];
+const I18={};['ja','id','ms','zh','ar'].forEach((l,i)=>{I18[l]={};TRN.forEach(r=>I18[l][r[0]]=r[i+1])});
+let lang='en';try{lang=localStorage.getItem('xf_lang')||'en'}catch(e){}
+const tr=s=>(I18[lang]&&I18[lang][s])||s,cap=s=>s[0].toUpperCase()+s.slice(1);
+function btxt(){$('#sfxb').textContent=tr('Sound effects')+': '+tr(muted?'Off':'On');$('#thm').textContent=tr('Theme')+': '+tr(cap(document.documentElement.dataset.theme))}
+function applyLang(){const d=document.documentElement;d.lang=lang;d.dir=lang==='ar'?'rtl':'ltr';
+ document.querySelectorAll('[data-t]').forEach(el=>{if(el._en==null)el._en=el.textContent;el.textContent=tr(el._en)});
+ document.querySelectorAll('#slang [data-g]').forEach(b=>b.classList.toggle('on',b.dataset.g===lang));btxt();drawLearn();status();movePill()}
+const closeS=()=>$('#sheet').classList.remove('show');
+$('#setb').onclick=()=>{$('#sheet').classList.add('show');sfx.pick()};$('#sx').onclick=closeS;
+$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeS()});
+$('#slang').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(!b.dataset.g){toast('More Coming Soon');tone(220,.15,'square',.03,140);return}
+ lang=b.dataset.g;try{localStorage.setItem('xf_lang',lang)}catch(_){}applyLang();sfx.fix()});
+/* ---------- custom keyboard ---------- */
+const KB={abc:[['q','w','e','r','t','y','u','i','o','p'],['a','s','d','f','g','h','j','k','l'],['{shift}','z','x','c','v','b','n','m','{bs}']],
+ sym:[['1','2','3','4','5','6','7','8','9','0'],['@','#','$','_','&','-','+','(',')','/'],['{sym2}','*','"',"'",':',';','!','?','{bs}']],
+ sym2:[['~','`','|','\\','{','}','[',']','<','>'],['%','^','=','==','~=','..','+=','-=','::','=>'],['{sym}','/','*','.',',',':',';','!','?','{bs}']]};
+const MK={'{shift}':['sp w shf','⇧'],'{bs}':['sp w','⌫'],'{sym}':['sp w','?123'],'{sym2}':['sp w','=\\<'],'{abc}':['sp w','ABC']};
+const ARW={'{al}':'ArrowLeft','{au}':'ArrowUp','{ad}':'ArrowDown','{ar}':'ArrowRight'};
+const STRIP=[['{hide}','⌄'],['{tab}','Tab'],['{al}','←'],['{au}','↑'],['{ad}','↓'],['{ar}','→'],...'(){}[]"\';:=.,'.split('').map(c=>[c,c])];
+const ea=s=>esc(s).replace(/"/g,'&quot;'),PS=new Map();
+let layer='abc',shift=0,lastSh=0;
+const buzz=()=>{try{navigator.vibrate&&navigator.vibrate(6)}catch(e){}};
+function kh(k,i,ri){const m=MK[k];if(m)return `<button class="k ${m[0]}" data-k="${k}" style="--i:${i}">${m[1]}</button>`;
+ const h=layer==='abc'&&ri===0?'1234567890'[KB.abc[0].indexOf(k)]:'';
+ return `<button class="k${layer==='abc'?' l':''}${k.length>1?' m':''}" data-k="${ea(k)}"${h?` data-h="${h}"`:''} style="--i:${i}">${esc(k)}${h?`<i>${h}</i>`:''}</button>`}
+function kbBuild(){let i=0;$('#rows').innerHTML=KB[layer].map((r,ri)=>`<div class="kr${layer==='abc'&&ri===1?' ind':''}">${r.map(k=>kh(k,i++,ri)).join('')}</div>`).join('')+
+ `<div class="kr">${kh(layer==='abc'?'{sym}':'{abc}',i++,9)}${kh(',',i++,9)}<button class="k sx" data-k="{space}" style="--i:${i++}"></button>${kh('.',i++,9)}<button class="k en" data-k="{enter}" style="--i:${i}">↵</button></div>`;kbLabel();kbShift()}
+function kbLabel(){const s=document.querySelector('#kb .sx');if(s)s.textContent=LANG[cur].n}
+function kbShift(){const kb=$('#kb');kb.dataset.sh=shift;const s=kb.querySelector('.shf');if(s){s.classList.toggle('on',shift>0);s.classList.toggle('lock',shift===2)}}
+$('#strip').innerHTML=STRIP.map(([k,t])=>`<button class="k s2" data-k="${ea(k)}">${esc(t)}</button>`).join('');
+function reveal(){const v=ta.value.slice(0,ta.selectionStart).split('\n'),row=v.length-1,y=14+row*LH,x=14+v[row].length*CW;
+ if(y<ta.scrollTop)ta.scrollTop=Math.max(0,y-8);else if(y+LH+14>ta.scrollTop+ta.clientHeight)ta.scrollTop=y+LH+14-ta.clientHeight;
+ if(x<ta.scrollLeft+20)ta.scrollLeft=Math.max(0,x-40);else if(x+30>ta.scrollLeft+ta.clientWidth)ta.scrollLeft=x+60-ta.clientWidth;scroll();status()}
+function move(k){const v=ta.value;let s=ta.selectionStart,e=ta.selectionEnd;closeAC();
+ if(k==='ArrowLeft')s=e=s===e?Math.max(0,s-1):s;else if(k==='ArrowRight')s=e=s===e?Math.min(v.length,e+1):e;
+ else{const a=v.lastIndexOf('\n',s-1)+1,col=s-a;if(k==='ArrowUp'){if(a===0)s=0;else{const pa=a-2<0?0:v.lastIndexOf('\n',a-2)+1;s=Math.min(pa+col,a-1)}}
+  else{const nl=v.indexOf('\n',s);if(nl<0)s=v.length;else{const ne=v.indexOf('\n',nl+1);s=Math.min(nl+1+col,ne<0?v.length:ne)}}e=s}
+ ta.setSelectionRange(s,e);reveal()}
+function ins(t){ta.focus({preventScroll:true});let ok=false;try{ok=document.execCommand('insertText',false,t)}catch(e){}
+ if(!ok){ta.setRangeText(t,ta.selectionStart,ta.selectionEnd,'end');ta.dispatchEvent(new InputEvent('input',{inputType:'insertText',data:t,bubbles:true}))}}
+function del(){let ok=false;try{ok=document.execCommand('delete')}catch(e){}
+ if(!ok){const s=ta.selectionStart,e=ta.selectionEnd;ta.setRangeText('',s===e?Math.max(0,s-1):s,e,'end');ta.dispatchEvent(new InputEvent('input',{inputType:'deleteContentBackward',bubbles:true}))}}
+function press(k){ta.focus({preventScroll:true});const ev=new KeyboardEvent('keydown',{key:k,bubbles:true,cancelable:true});ta.dispatchEvent(ev);
+ if(ev.defaultPrevented){if(k==='Enter'||k==='Tab')reveal();return}
+ if(k==='Backspace')del();else if(k==='Enter'){ins('\n');reveal()}else if(k==='Tab')ins(LANG[cur].u);else if(k.startsWith('Arrow'))move(k);else{if(k.length>1)sfx.key('x');ins(k)}}
+function act(k){
+ if(k==='{shift}'){const n=Date.now();shift=shift===2?0:(shift===1&&n-lastSh<350?2:(shift?0:1));lastSh=n;kbShift();tone(1100,.03,'sine',.02);return}
+ if(k==='{sym}'||k==='{sym2}'||k==='{abc}'){layer=k.slice(1,-1);kbBuild();tone(900,.04,'triangle',.03);return}
+ if(k==='{hide}')return kbToggle(false);
+ if(k==='{space}')return press(' ');if(k==='{enter}')return press('Enter');if(k==='{tab}')return press('Tab');if(ARW[k])return press(ARW[k]);
+ press(shift&&k.length===1?k.toUpperCase():k);if(shift===1){shift=0;kbShift()}}
+function showPv(b){const r=b.getBoundingClientRect(),p=$('#pv'),c=b.dataset.k;p.textContent=shift&&b.classList.contains('l')?c.toUpperCase():c;
+ p.style.left=Math.max(4,Math.min(innerWidth-58,r.left+r.width/2-27))+'px';p.style.top=(r.top-70)+'px';p.classList.remove('on');void p.offsetWidth;p.classList.add('on')}
+const hidePv=()=>$('#pv').classList.remove('on');
+function kd(e){const b=e.target.closest('.k');if(!b)return;e.preventDefault();const p={b,k:b.dataset.k,x:e.clientX,fired:0,moved:0};PS.set(e.pointerId,p);b.classList.add('dn');buzz();
+ if(b.closest('#rows')&&p.k.length===1)showPv(b);
+ if(p.k==='{bs}'){press('Backspace');p.t=setTimeout(()=>{p.r=setInterval(()=>press('Backspace'),55)},380)}
+ else if(b.dataset.h)p.t=setTimeout(()=>{p.fired=1;hidePv();press(b.dataset.h)},380)}
+function kend(e,go){const p=PS.get(e.pointerId);if(!p)return;PS.delete(e.pointerId);clearTimeout(p.t);clearInterval(p.r);p.b.classList.remove('dn');hidePv();if(go&&p.k!=='{bs}'&&!p.fired&&!p.moved)act(p.k)}
+function km(e){const p=PS.get(e.pointerId);if(!p||p.k!=='{space}'||Math.abs(e.clientX-p.x)<14)return;press(e.clientX>p.x?'ArrowRight':'ArrowLeft');p.x=e.clientX;p.moved=1}
+function kbToggle(on){const k=$('#kb');on=on===undefined?!k.classList.contains('show'):on;k.classList.toggle('show',on);$('#kbtn').classList.toggle('on',on);ta.inputMode=on?'none':'';
+ if(on){ta.focus({preventScroll:true});setTimeout(()=>{measure();reveal()},560)}else closeAC();tone(on?500:900,.18,'triangle',.04,on?900:500)}
+$('#kb').addEventListener('pointerdown',kd);addEventListener('pointerup',e=>kend(e,1));addEventListener('pointercancel',e=>kend(e,0));addEventListener('pointermove',km);
+$('#kbtn').onclick=()=>{if($('#app').classList.contains('learn')){show('ed');kbToggle(true)}else kbToggle()};
+addEventListener('resize',measure);setLang('lua',true);drawLearn();applyLang();kbBuild();measure();document.fonts&&document.fonts.ready.then(measure);
+</script>
+</body>
+</html>
